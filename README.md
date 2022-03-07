@@ -2,7 +2,23 @@
 
 A new Flutter project.
 
-## Getting Started
+## About App
+
+## Pages
+
+# Home Page
+
+<p>
+<img src="./screenshots/home_page.png" alt="Home" width="45%">
+</p>
+<a href> ="./lib/screens/home"Home</a> Home Pageda Valutalar joylashgan
+
+# Convertion Page
+<p>
+<img src="./screenshots/convertion_page.png" alt="Home" width="45%">
+</p>
+<a href> ="./lib/screens/convertion_valuta"Convertion</a>  Convertatsiya uchun
+
 
 This project is a starting point for a Flutter application.
 
