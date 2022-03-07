@@ -1,6 +1,6 @@
-import 'package:currency/core/constants/font.dart';
-import 'package:currency/core/constants/margin_padding.dart';
+import 'package:currency/core/constants/color.dart';
 import 'package:currency/core/constants/path.dart';
+import 'package:currency/models/currency_model.dart';
 import 'package:currency/service/currency_service.dart';
 import 'package:flutter/material.dart';
 
@@ -13,113 +13,214 @@ class ConvertionPage extends StatefulWidget {
 }
 
 class _ConvertionPageState extends State<ConvertionPage> {
-  TextEditingController _controllerValuta = TextEditingController();
-  TextEditingController _controllerUzbValuta = TextEditingController();
+  TextEditingController _controllerValuta = TextEditingController(text: '1');
+  late String dropdownValue;
+  String dropdownValue2 = "AED";
+
+  double? results;
+  double? defoultRes;
+
+  int nameIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorConst.tealColor,
       body: Hero(
         tag: '2',
         child: SafeArea(
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                FutureBuilder(
-                  future: CurrencyService.getCurruncy(),
-                  builder: (context, snap) {
-                    var data = snap.data;
-                    if (!snap.hasData) {
-                      return const CircularProgressIndicator.adaptive();
-                    } else if (snap.hasError) {
-                      return const Center(
-                        child: Text("INTERNET BILAN MUAMMO BOR"),
-                      );
-                    } else {
-                      return Column(
-                        children: [
-                          Padding(
-                            padding: MyPaddingMargin.kExtraSmall,
-                            child: TextFormField(
-                              keyboardType: TextInputType.number,
-                              controller: _controllerValuta,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                labelText: (data as List)[widget.index]
-                                    .title
-                                    .toString(),
+            child: FutureBuilder(
+              future: CurrencyService.getCurruncy(),
+              builder: (context, AsyncSnapshot<List<CurrencyModel>> snap) {
+                if (!snap.hasData) {
+                  return const Center(
+                      child: CircularProgressIndicator.adaptive());
+                } else if (snap.hasError) {
+                  return const Center(child: Text("NO INTENET"));
+                } else {
+                  var data = snap.data;
+                  dropdownValue = data![widget.index].code.toString();
+                  return Column(
+                    children: [
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.03),
+                      Center(
+                        child: Text(
+                          "Last Update: " + data[widget.index].date.toString(),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: TextFormField(
+                          // ? Background Color kerak
+                          controller: _controllerValuta,
+                          decoration: InputDecoration(
+                            prefixIcon: Container(
+                              margin: EdgeInsets.only(
+                                  right:
+                                      MediaQuery.of(context).size.width * 0.03),
+                              height: MediaQuery.of(context).size.height * 0.01,
+                              width: MediaQuery.of(context).size.width * 0.2,
+                              decoration: BoxDecoration(
+                                  color: ColorConst.kWhite,
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 13,
+                                    backgroundImage: AssetImage(
+                                        MyPath.path[widget.index].toString()),
+                                  ),
+                                  Text(
+                                    data[widget.index].code.toString(),
+                                    style: const TextStyle(fontSize: 20),
+                                  )
+                                ],
                               ),
-                              onChanged: (value) {
-                                setState(
-                                  () {
-                                    _controllerUzbValuta =
-                                        TextEditingController(
-                                      text: (double.parse(
-                                                  _controllerValuta.text) *
-                                              double.parse(
-                                                  data[widget.index].cbPrice))
-                                          .toString(),
-                                    );
-                                  },
-                                );
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                Icons.subdirectory_arrow_left_sharp,
+                                color: ColorConst.kWhite,
+                              ),
+                              onPressed: () {
+                                // TODO: Valuta Ayirboshlash
+                                setState(() {
+                                  hisoblash(data);
+                                });
                               },
                             ),
-                          ),
-                          Padding(
-                            padding: MyPaddingMargin.kExtraSmall,
-                            child: TextFormField(
-                              controller: _controllerUzbValuta,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                labelText: "O'zbek so'mi",
-                              ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(2),
                             ),
                           ),
-                          Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  height: 80,
-                                  width: 80,
-                                  decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          image: AssetImage(
-                                              MyPath.path[widget.index]),
-                                          fit: BoxFit.cover),
-                                      borderRadius: BorderRadius.circular(30)),
-                                ),
-                                Icon(
-                                  Icons.arrow_right_alt,
-                                  size: MyFont.kLargeFont,
-                                ),
-                                Container(
-                                  height: 80,
-                                  width: 80,
-                                  decoration: BoxDecoration(
-                                      image: const DecorationImage(
-                                          image: AssetImage(
-                                              'assets/images/uzb.jpeg'),
-                                          fit: BoxFit.cover),
-                                      borderRadius: BorderRadius.circular(30)),
-                                ),
-                              ],
-                            ),
-                          )
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          dropdown1(data, context),
+                          dropdown2(data, context),
                         ],
-                      );
-                    }
-                  },
-                ),
-              ],
+                      ),
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.03),
+                      Text(
+                        (results != null
+                                ? results!.toStringAsFixed(2)
+                                : defoultValuta(data)) +
+                            " " +
+                            data[nameIndex].code.toString(),
+                        style: TextStyle(
+                            color: ColorConst.kWhite,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  );
+                }
+              },
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  hisoblash(List<CurrencyModel> data) {
+    for (int i = 0; i < data.length; i++) {
+      if (dropdownValue2 == data[i].code) {
+        results = double.parse(_controllerValuta.text) *
+            double.parse(data[widget.index].cbPrice.toString()) /
+            double.parse(data[i].cbPrice.toString());
+
+        nameIndex = i;
+      }
+    }
+  }
+
+  defoultValuta(List<CurrencyModel> data) {
+    for (int i = 0; i < data.length; i++) {
+      if (dropdownValue2 == data[i].code) {
+        defoultRes = double.parse('1') *
+            double.parse(data[widget.index].cbPrice.toString()) /
+            double.parse(data[i].cbPrice.toString());
+        break;
+      }
+    }
+    return defoultRes!.toStringAsFixed(2);
+  }
+
+  Container dropdown1(List<CurrencyModel> data, BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.058,
+      width: MediaQuery.of(context).size.width * 0.24,
+      decoration: BoxDecoration(
+          color: ColorConst.kWhite, borderRadius: BorderRadius.circular(5)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Wrap(
+            children: [
+              CircleAvatar(
+                radius: 10,
+                backgroundImage: AssetImage(
+                  MyPath.path[widget.index],
+                ),
+              ),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+              Text(
+                data[widget.index].code.toString(),
+                style: const TextStyle(fontSize: 20),
+              ),
+            ],
+          ),
+          const Icon(Icons.download_done_outlined)
+        ],
+      ),
+    );
+  }
+
+  Container dropdown2(List<CurrencyModel> data, BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          color: ColorConst.kWhite, borderRadius: BorderRadius.circular(5)),
+      child: DropdownButton(
+        alignment: Alignment.center,
+        enableFeedback: false,
+        value: dropdownValue2,
+        items: List.generate(
+          data.length,
+          (index) {
+            return DropdownMenuItem(
+              value: data[index].code.toString(),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  CircleAvatar(
+                    radius: 10,
+                    backgroundImage: AssetImage(
+                      MyPath.path[index],
+                    ),
+                  ),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                  Text(
+                    data[index].code.toString(),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        onChanged: (v) {
+          dropdownValue2 = v.toString();
+          setState(() {});
+        },
       ),
     );
   }

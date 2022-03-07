@@ -3,8 +3,10 @@ import 'package:currency/core/constants/color.dart';
 import 'package:currency/core/constants/font.dart';
 import 'package:currency/core/constants/myStyle.dart';
 import 'package:currency/core/constants/path.dart';
+import 'package:currency/models/currency_model.dart';
 import 'package:currency/service/currency_service.dart';
 import 'package:flutter/material.dart';
+import 'package:circle_nav_bar/circle_nav_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,6 +19,13 @@ class _HomePageState extends State<HomePage> {
   int sum = 0;
   bool _isBalance = true;
   bool disabellSell = true;
+
+  String dropdownValue = "AED";
+  String dropdownValue2 = "USD";
+
+  TextEditingController _controller1 = TextEditingController();
+  TextEditingController _controller2 = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -69,8 +78,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Padding(
                   padding: EdgeInsets.only(right: getW(150), top: getH(13)),
-                  child:
-                      Text("\$2,450.00", style: MyTextStyle.sumBalance(context)),
+                  child: Text("\$2,450.00",
+                      style: MyTextStyle.sumBalance(context)),
                 ),
                 SizedBox(height: getH(59)),
                 Row(
@@ -122,7 +131,7 @@ class _HomePageState extends State<HomePage> {
                         if (disabellSell == true) {
                           disabellSell = false;
                         }
-          
+
                         setState(() {});
                       },
                     ),
@@ -163,7 +172,8 @@ class _HomePageState extends State<HomePage> {
                               ),
                               SizedBox(
                                 width: MediaQuery.of(context).size.width,
-                                height: MediaQuery.of(context).size.height * 0.52,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.52,
                                 child: ListView.builder(
                                   itemCount: 24,
                                   itemBuilder: (_, __) => ListTile(
@@ -172,17 +182,23 @@ class _HomePageState extends State<HomePage> {
                                       backgroundImage:
                                           AssetImage(MyPath.path[__]),
                                     ),
-                                    title: Text(data[__].title.toString(),
-                                        style: MyTextStyle.monyNameTextStyle(
-                                            context)),
+                                    title: Text(
+                                      data[__].title.toString(),
+                                      style: MyTextStyle.monyNameTextStyle(
+                                        context,
+                                      ),
+                                    ),
                                     subtitle: Text(
                                       data[__].cbPrice.toString() + ' so\'m',
-                                      style: MyTextStyle.priceTextStyle(context),
+                                      style:
+                                          MyTextStyle.priceTextStyle(context),
                                     ),
                                     trailing: Text("so'mda",
-                                        style: MyTextStyle.somTextStyle(context)),
+                                        style:
+                                            MyTextStyle.somTextStyle(context)),
                                     onTap: () {
-                                      Navigator.pushNamed(context, '/convertion',
+                                      Navigator.pushNamed(
+                                          context, '/convertion',
                                           arguments: __);
                                     },
                                   ),
@@ -198,6 +214,74 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
+    );
+  }
+
+  DropdownButton<String> dropDownButton(List<CurrencyModel> snap) {
+    return DropdownButton(
+      alignment: Alignment.center,
+      enableFeedback: false,
+      value: dropdownValue,
+      items: List.generate(
+        snap.length,
+        (index) {
+          return DropdownMenuItem(
+            value: snap[index].code.toString(),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 10,
+                  backgroundImage: AssetImage(
+                    MyPath.path[index],
+                  ),
+                ),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                Text(
+                  snap[index].code.toString(),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+      onChanged: (v) {
+        dropdownValue = v.toString();
+        setState(() {});
+      },
+    );
+  }
+
+  DropdownButton<String> dropDownButton2(List<CurrencyModel> snap) {
+    return DropdownButton(
+      alignment: Alignment.center,
+      enableFeedback: false,
+      value: dropdownValue2,
+      items: List.generate(
+        snap.length,
+        (index) {
+          return DropdownMenuItem(
+            value: snap[index].code.toString(),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 10,
+                  backgroundImage: AssetImage(
+                    MyPath.path[index],
+                  ),
+                ),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                Text(
+                  snap[index].code.toString(),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+      onChanged: (v) {
+        dropdownValue2 = v.toString();
+        setState(() {});
+      },
     );
   }
 }

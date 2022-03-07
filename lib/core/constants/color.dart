@@ -8,4 +8,13 @@ class ColorConst {
   static Color kBlack = Colors.black;
 
   static Color kDisabledButton = Colors.grey;
+
+  static Color bottomColor = Colors.deepPurple;
+  static Color tealColor = Colors.teal;
+  static Color greenColor = Colors.green;
+
+  static LinearGradient gradient = const LinearGradient(
+    colors: [Colors.cyan, Colors.blue, Colors.red],
+    begin: Alignment.topLeft,
+  );
 }

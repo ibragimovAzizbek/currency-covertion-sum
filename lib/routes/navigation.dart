@@ -1,4 +1,5 @@
 import 'package:currency/screens/convertion.dart';
+import 'package:currency/screens/convertion_valuta/convertion_valuta.dart';
 import 'package:currency/screens/home/home_page.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,9 @@ class MyRoute {
             index: args as int,
           ),
         );
+
+      case '/valuts':
+        return MaterialPageRoute(builder: (_) => const ConvertionVluta());
     }
   }
 }
